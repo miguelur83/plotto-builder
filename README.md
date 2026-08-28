@@ -74,9 +74,9 @@ traces back to Cook's original.
 
 ## License
 
-The **_Plotto_ text is in the public domain**. This project's own code (the pipeline and the app)
-is original work by the author. _No code license file is included yet_ — if you'd like to reuse the
-code, open an issue; a permissive license (e.g. MIT) can be added.
+This project's own code — the data pipeline (`scripts/`) and the app (`src/`) — is released
+under the **[MIT License](LICENSE)**. The underlying **_Plotto_ text is in the public domain**
+and is not subject to that license (see [Attribution & sources](#attribution--sources)).
 
 ---
 
