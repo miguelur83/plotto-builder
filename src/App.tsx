@@ -4,7 +4,6 @@ import { legendFor, loadPlotto, searchConflicts } from "./data";
 import { activeNames, createNamer } from "./names";
 import { resolveOptions } from "./options";
 import { usePlot, type PlotFrame } from "./usePlot";
-import { toMarkdown } from "./export";
 import { Setup } from "./components/Setup";
 import { Workspace } from "./components/Workspace";
 import { PlotPanel } from "./components/PlotPanel";
@@ -83,14 +82,6 @@ export function App() {
     setPreview(null); scrollTop();
   };
 
-  const onExport = async () => {
-    const md = toMarkdown(plot, index, namer, names);
-    try {
-      await navigator.clipboard.writeText(md);
-      alert("Plot copied to clipboard as Markdown.\n(Full export/import — .md, .txt, .json — is the next increment.)");
-    } catch { alert(md); }
-  };
-
   return (
     <div className="app">
       <header className="topbar">
@@ -147,7 +138,6 @@ export function App() {
           names={names}
           focusId={preview?.conflictId ?? null}
           onFocusBeat={(id, permIndex) => { setPreview({ conflictId: id, permIndex }); scrollTop(); }}
-          onExport={onExport}
         />
       </div>
     </div>

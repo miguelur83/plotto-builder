@@ -36,11 +36,14 @@ Plot (title, frame, beats, names) autosaves to `localStorage` and restores on re
 
 ## Next
 
-### ▶ 6. Export & import  *(current stopgap: Markdown to clipboard)*
-- Export to **Markdown**, **plain text**, and round-trippable **JSON** (ordered beats
-  with full text, character legend, source citations by conflict id).
-- **Re-import** a saved JSON plot to keep working. `usePlot` already has `replaceAll`.
-- File download/upload (no backend).
+### ◐ 6. Export & import
+- ✅ **Downloadable exports** — the Export menu offers a **formatted `.html`** document
+  (self-contained, print → PDF) and a **`.md`** file. Both include the masterplot
+  sentence, the character legend, and every beat with **names applied** and stages
+  preserved, each cited by conflict id. Implemented in `src/export.ts` (`toHtmlDocument`,
+  `toMarkdown`, `downloadFile`).
+- ▶ Still to do: round-trippable **JSON** export + **re-import** to resume a saved plot
+  (`usePlot` already has `replaceAll`).
 
 ### 7. Graph view
 Cytoscape.js: conflicts as nodes, lead-up/carry-on as directed edges, progressive

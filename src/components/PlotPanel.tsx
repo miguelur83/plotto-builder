@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import type { PlottoIndex } from "../data";
 import type { NameMap, Namer } from "../names";
 import type { PlotApi } from "../usePlot";
 import { synopsis } from "../masterplot";
+import { downloadFile, slugify, toHtmlDocument, toMarkdown } from "../export";
 import { ConflictText } from "./ConflictText";
 
 interface Props {
@@ -11,12 +13,33 @@ interface Props {
   names: NameMap;
   focusId: string | null;
   onFocusBeat: (id: string, permIndex: number) => void;
-  onExport: () => void;
 }
 
-export function PlotPanel({ index, api, namer, names, focusId, onFocusBeat, onExport }: Props) {
+export function PlotPanel({ index, api, namer, names, focusId, onFocusBeat }: Props) {
   const { plot } = api;
   const syn = synopsis(plot.frame, index.data.masterplot);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [flash, setFlash] = useState<string | null>(null);
+  useEffect(() => {
+    if (!flash) return;
+    const t = window.setTimeout(() => setFlash(null), 6000);
+    return () => window.clearTimeout(t);
+  }, [flash]);
+
+  const noBeats = plot.steps.length === 0;
+
+  const downloadHtml = () => {
+    downloadFile(`${slugify(plot.title)}.html`, "text/html;charset=utf-8", toHtmlDocument(plot, index, namer, names));
+    setFlash("Formatted .html downloaded — open it, then Print → Save as PDF for a PDF.");
+    setMenuOpen(false);
+  };
+
+  const downloadMarkdown = () => {
+    downloadFile(`${slugify(plot.title)}.md`, "text/markdown;charset=utf-8", toMarkdown(plot, index, namer, names));
+    setFlash("Markdown .md downloaded.");
+    setMenuOpen(false);
+  };
 
   return (
     <aside className="plotpanel">
@@ -24,9 +47,26 @@ export function PlotPanel({ index, api, namer, names, focusId, onFocusBeat, onEx
         <input className="plot-title" value={plot.title} onChange={(e) => api.setTitle(e.target.value)} aria-label="Plot title" />
         <div className="plot-actions">
           <span className="step-count">{plot.steps.length} beat{plot.steps.length === 1 ? "" : "s"}</span>
-          <button className="btn" onClick={onExport} disabled={plot.steps.length === 0}>Export</button>
-          <button className="btn" onClick={() => { if (plot.steps.length === 0 || confirm("Clear the whole plot?")) api.clear(); }}>Clear</button>
+          <div className="export-wrap">
+            <button className="btn" onClick={() => setMenuOpen((v) => !v)} disabled={noBeats} aria-haspopup="menu" aria-expanded={menuOpen}>
+              Export ▾
+            </button>
+            {menuOpen && (
+              <div className="export-menu" role="menu">
+                <button role="menuitem" onClick={downloadHtml}>
+                  <span className="mi-title">Formatted document</span>
+                  <span className="mi-sub">.html · opens in any browser, print → PDF</span>
+                </button>
+                <button role="menuitem" onClick={downloadMarkdown}>
+                  <span className="mi-title">Markdown</span>
+                  <span className="mi-sub">.md · portable, editable</span>
+                </button>
+              </div>
+            )}
+          </div>
+          <button className="btn" onClick={() => { if (noBeats || confirm("Clear the whole plot?")) api.clear(); }}>Clear</button>
         </div>
+        {flash && <div className="export-flash">{flash}</div>}
       </div>
 
       <div className="panel-scroll">
